@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GOMIN Pooljang</title>
+    <link rel="stylesheet" href="../static/css/header.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- axios 추가 -->
+  </head>
+  <body>
+    <header style="text-align: center; width: 100%">
+      <div class="header-wrapper">
+        <div class="header">
+          <div class="header-content">
+            <div class="container logo-container">
+              <img
+                class="logo"
+                src="../static/images/logo.png"
+                alt="logo"
+                onclick="location.href='/'" />
+            </div>
+            <div class="container menu-container"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <script>
+      function getCookie(name) {
+        const cookies = document.cookie.split("; ");
+        for (let cookie of cookies) {
+          const [key, value] = cookie.split("=");
+          if (key === name) return value;
+        }
+        return null;
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        //console.log("DOMContentLoaded event triggered!"); // DOMContentLoaded 확인
+        const menuContainer = document.querySelector(".menu-container");
+
+        // Render menu based on jwtToken
+        const jwtToken = getCookie("jwtToken");
+        //console.log("znzlznzlznzlznzl", jwtToken); // 디버깅 로그
+        //console.log("JWT Token:", jwtToken); // 쿠키 값 확인
+
+        menuContainer.innerHTML = jwtToken
+          ? `
+            <button class="header-menu" onclick="menu2_1()">마이페이지</button>
+            <button class="header-menu" onclick="menu2_2()">정보수정</button>
+            <button class="header-menu" onclick="menu2_3()">로그아웃</button>
+            <button class="header-menu" onclick="menu2_4()">회원탈퇴</button>
+          `
+          : `
+            <button class="header-menu" onclick="location.href='/'">로그인</button>
+          `;
+      });
+
+      // Navigate to My Page
+      function menu2_1() {
+        const jwt = "<%= jwt %>";
+        const loginStatus = "<%= loginStatus %>";
+        const decodedPayload = "<%= decodedPayload %>";
+        const userId = "<%= userId %>";
+
+        if (userId) {
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "/mypage";
+
+          const input = document.createElement("input");
+          const input2 = document.createElement("input");
+          const input3 = document.createElement("input");
+          input.type = "text";
+          input.name = "userId";
+          input.value = userId;
+
+          input2.type = "text";
+          input2.name = "currentPage";
+          input2.value = 1;
+
+          input3.type = "text";
+          input3.name = "tab";
+          input3.value = "myWorryList";
+
+          form.appendChild(input);
+          form.appendChild(input2);
+          form.appendChild(input3);
+          document.body.appendChild(form);
+          form.submit();
+        } else {
+          alert("사용자 정보가 없습니다.");
+        }
+      }
+
+      // Modify User Info
+      function menu2_2() {
+        alert("내정보수정 입니다");
+      }
+
+      // Logout
+      async function menu2_3() {
+        const jwtToken = getCookie("jwtToken");
+
+        try {
+          const res = await axios.get("/logout2", {
+            headers: { Authorization: `Bearer ${jwtToken}` },
+          });
+
+          //console.log("Logout Response:", res.data);
+          alert("로그아웃 되었습니다.");
+          location.href = "/";
+        } catch (error) {
+          console.error("로그아웃 중 오류 발생:", error);
+        }
+      }
+
+      // Delete Account
+      async function menu2_4() {
+        const jwtToken = getCookie("jwtToken");
+        try {
+          const password = prompt("비밀번호를 입력하세요");
+
+          if (!password) {
+            alert("비밀번호를 입력해주세요.");
+            return;
+          }
+
+          const res = await axios.post(
+            "/deleteAccount",
+            { password },
+            {
+              headers: {
+                Authorization: `Bearer ${jwtToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (res.data.success) {
+            alert("계정이 성공적으로 삭제되었습니다.");
+            location.href = "/";
+          } else {
+            alert("비밀번호가 일치하지 않습니다. 다시 시도해주세요.");
+          }
+        } catch (error) {
+          console.error("계정 삭제 중 오류 발생:", error);
+          alert("계정 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+      }
+    </script>
+  </body>
+</html>

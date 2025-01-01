@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>고민풀장</title>
+    <link rel="stylesheet" href="/static/css/index.css" />
+    <!-- axios CDN -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script defer src="/static/index.js"></script>
+  </head>
+  <body class="full-height">
+    <div
+      id="data-container"
+      data-jwt="<%= jwt %>"
+      data-login-status="<%= loginStatus %>"
+      data-decoded-Payload="<%= decodedPayload %>"
+      data-userId="<%= userId %>"
+    ></div>
+    <div class="header-full-width"><%- include('include/header') %></div>
+    <div class="index-container-wrap">
+      <!-- 로그인 / 회원가입 모달 -->
+      <div class="modal" style="display: none">
+        <div class="modal_body">
+          <div>
+            <img src="/static/images/pool.gif" />
+            <img src="/static/images/pool2.gif" />
+          </div>
+          <div class="closeX">X</div>
+
+          <!-- 로그인 -->
+          <div class="login" id="login-screen" style="display: none">
+            <form name="form-login">
+              <h2>WELCOME</h2>
+              <label>
+                <span class="bold">Email</span>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="이메일을 입력하세요"
+                  required
+                />
+                <span class="id_error">가입되지 않은 아이디입니다!</span>
+              </label>
+              <label>
+                <span class="bold">Password</span>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="비밀번호를 입력하세요"
+                  required
+                />
+                <span class="pw_error">비밀 번호가 틀렸습니다!</span>
+              </label>
+              <div class="checkbox-container">
+                <div class="middle">
+                  <input type="checkbox" class="checkbox" />
+                  <span>자동 로그인</span>
+                </div>
+                <button type="button" class="checkbox-container forget">
+                  Forget Password?
+                </button>
+              </div>
+              <button type="button" onclick="loginFn()">로그인</button>
+              <div class="flex">
+                <p class="user">아직 회원이 아니신가요?</p>
+                <button type="button" class="joinBtn" id="join-btn">
+                  회원가입
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- 회원 가입 -->
+          <div class="join" id="join-screen">
+            <form name="form-join">
+              <h2>JOIN US?</h2>
+              <div class="flex">
+                <label>
+                  <span class="bold right">Email</span>
+                  <input type="email" name="email" class="emailId" required />@
+                  <select class="form-select" id="domain" name="domain">
+                    <option>gmail.com</option>
+                    <option>naver.com</option>
+                    <option>daum.net</option>
+                  </select>
+                </label>
+                <button type="button" class="duplication" onclick="duplCheck()">
+                  중복<br />검사
+                </button>
+              </div>
+              <label>
+                <span class="bold">Password</span>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="비밀번호를 입력하세요"
+                  required
+                />
+              </label>
+              <label>
+                <span class="bold">Password (confirm)</span>
+                <input
+                  type="password"
+                  name="confirmPw"
+                  placeholder="한 번 더 입력하세요"
+                  required
+                />
+              </label>
+              <label>
+                <span class="bold">비밀번호 찾기 질문</span>
+                <select class="form-select" id="question" name="question">
+                  <option>출신 초등학교 이름은?</option>
+                  <option>학창시절 별명은?</option>
+                  <option>조부모님의 성함은?</option>
+                </select>
+              </label>
+              <br /><br />
+              <label>
+                <span class="bold">비밀번호 찾기 답</span>
+                <input
+                  type="text"
+                  placeholder="위의 질문에 대한 답을 기입하세요"
+                  name="answer"
+                  required
+                />
+              </label>
+              <button type="button" onclick="joinFn()">회원 가입</button>
+            </form>
+          </div>
+
+          <button class="closeBtn">닫기</button>
+        </div>
+      </div>
+
+      <!-- forget password? -->
+      <div class="forgot-pw-modal" style="display: none">
+        <div class="forgot-pw-modal-body">
+          <div class="closeX">X</div>
+          <div class="pw_container">
+            <form name="form-pw">
+              <h2>FIND PASSWORD</h2>
+              <div class="flexable">
+                <label>
+                  <span class="bold">Your Email</span>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="이메일을 입력하세요"
+                  />
+                </label>
+              </div>
+              <div class="flex">
+                <label>
+                  <span class="bold">비밀번호 찾기 질문</span>
+                  <select class="form-select" id="asking" name="question">
+                    <option>출신 초등학교 이름은?</option>
+                    <option>학창시절 별명은?</option>
+                    <option>조부모님의 성함은?</option>
+                  </select> </label
+                ><br /><br />
+                <label>
+                  <span class="bold">비밀번호 찾기 답</span>
+                  <input type="text" placeholder="answer" name="answer" />
+                </label>
+              </div>
+              <button type="button" class="pw_btn" onclick="checkAnswer()">
+                비밀번호 수정
+              </button>
+              <hr />
+
+              <div class="pw-update-container" style="display: none">
+                <label>
+                  <span class="bold">새 비밀번호</span>
+                  <input
+                    name="password"
+                    type="password"
+                    placeholder="비밀번호를 입력하세요"
+                  />
+                </label>
+                <label>
+                  <span class="bold">Password (confirm)</span>
+                  <input
+                    name="confirmPw"
+                    type="password"
+                    placeholder="한 번 더 입력하세요"
+                  />
+                </label>
+                <button type="button" class="pw_btn" onclick="updatePw()">
+                  수정 완료
+                </button>
+              </div>
+            </form>
+          </div>
+          <button class="closeBtn-pw">닫기</button>
+        </div>
+      </div>
+
+      <!-- top-section -->
+      <div class="index-container">
+        <div class="main-container">
+          <div class="top-section">
+            <div class="refreshBtn" onclick="receiveLetter()">
+              <img
+                src="/static/images/receive-letter.png"
+                alt="receive-letter"
+              /><span class="toggle1">고민 듣는<br />예쁜 마음</span>
+              <span class="toggle2" style="display: none"
+                >요즘 나의<br />고민은요!</span
+              >
+            </div>
+            <div><%- include('include/notification') %></div>
+          </div>
+
+          <!-- 메인 컨텐츠 -->
+          <div class="letter-container">
+            <div class="warning-box">
+              <img src="/static/images/pool_anno.png" alt="pool" />
+              <p>
+                <b>잠깐!!</b><br />
+                보내시기 전 개인 정보가 포함되어 있는 지 확인하셨나요?!
+                <br />개인 정보 발설 시 고민풀장에서 일체의 책임을 지지
+                않습니다!!
+              </p>
+            </div>
+
+            <div class="content-area">
+              <form name="form-letter">
+                <input
+                  type="text"
+                  class="input-title"
+                  name="title"
+                  placeholder="제목을 입력하세요"
+                />
+                <textarea
+                  class="input-content"
+                  name="message"
+                  placeholder="내용을 입력하세요"
+                ></textarea>
+
+                <div class="button-container">
+                  <button
+                    type="button"
+                    class="submitBtn"
+                    onclick="sendContent()"
+                  >
+                    고민 보내기
+                  </button>
+                </div>
+              </form>
+
+              <!-- 새로운 고민 섹션 -->
+              <div class="new-worry">
+                <form name="form-reply" style="display: none">
+                  <label for="title">제목</label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    class="replyTitle"
+                    readonly
+                  />
+                  <label for="message">내용</label>
+                  <input
+                    type="text"
+                    id="message"
+                    name="message"
+                    class="replyMessage"
+                    readonly
+                  />
+                  <input style="visibility: hidden" id="getId" />
+                  <div class="button-container">
+                    <button
+                      class="skipBtn"
+                      type="button"
+                      onclick="rejectLetter()"
+                    >
+                      건너뛰기
+                    </button>
+                  </div>
+
+                  <label for="comment">답장</label>
+                  <textarea
+                    id="comment"
+                    name="comment"
+                    class="replyContent"
+                    maxlength="200"
+                  ></textarea>
+
+                  <div class="button-container">
+                    <button
+                      type="button"
+                      class="replyBtn"
+                      name="received"
+                      onclick="submitReply()"
+                    >
+                      답장 보내기
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

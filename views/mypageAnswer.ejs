@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GOMIN Pooljang</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../static/css/mypage.css" />
+  </head>
+  <body>
+    <div
+      id="data-container"
+      data-jwt="<%= jwt %>"
+      data-login-status="<%= loginStatus %>"
+      data-decoded-Payload="<%= decodedPayload %>"
+      data-userId="<%= userId %>"></div>
+    <div class="header-full-width"><%- include('./include/header') %></div>
+    <div class="index-container-wrap">
+      <div class="index-container">
+        <div class="main-body">
+          <div class="board">
+            <!-- 온도 표시 위치 변경 -->
+            <div class="temp-container">
+              <div class="temp-wrapper">
+                <img
+                  src="../static/images/thermometer.png"
+                  alt="온도계"
+                  class="temp-icon" />
+                <span class="temperatureText">나의 온도</span>
+                <span class="temperature"><%=user.temp %></span>
+              </div>
+            </div>
+            <div class="main-table">
+              <div class="main-table-col">
+                <button
+                  class="tab_send_btn tab-btn"
+                  onclick="toggleTab(this, '.tab')">
+                  내가 보낸 고민
+                </button>
+              </div>
+              <div class="main-table-col">
+                <button
+                  class="tab_receive_btn tab-btn"
+                  onclick="toggleTab(this, '.tab-2')">
+                  내가 답장한 고민
+                </button>
+              </div>
+            </div>
+            <!-- 내가 보낸 고민 탭 -->
+
+            <div class="tab">
+              <div class="tab-1-wrap">
+                <div class="tab-1-wrap-row-1">
+                  <div class="tab-1-wrap-row-1-col-1">제목</div>
+                  <div class="tab-1-wrap-row-1-col-2">날짜</div>
+                </div>
+                <% for(let i=0; i < myWorryList.length; i++) { %>
+                <div class="send-gomin-list">
+                  <div class="send-gomin-list-row">
+                    <div class="send-gomin-list-col-1">
+                      <li><%=myWorryList[i].title%></li>
+                    </div>
+                    <div class="send-gomin-list-col-2">
+                      <li>
+                        <%= new
+                        Date(myWorryList[i].senderPostDateTime).toLocaleString('ko-KR',
+                        { year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                        hour12: false }) %>
+                      </li>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+                <!-- 페이지 네비게이션 -->
+                <nav aria-label="Page navigation" class="pagination-container">
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item" onclick="worryListChangeBack7()">
+                      <a class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                    <li class="page-item" onclick="worryListChangePrevious()">
+                      <a class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                      </a>
+                    </li>
+
+                    <% for(let i=startPage; i <= endPage; i++) { %>
+                    <li
+                      class="page-item pageNumber <%= currentPage === i ? 'font-weight-bold' : '' %> page-link"
+                      onclick="worryListChangePage(this)">
+                      <%= i %>
+                    </li>
+                    <% }%>
+                    <li class="page-item" onclick="worryListChangeNext()">
+                      <a class="page-link" aria-label="Next">
+                        <span aria-hidden="true">&gt;</span>
+                      </a>
+                    </li>
+                    <li class="page-item" onclick="worryListChangeNext7()">
+                      <a class="page-link" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+            <!-- 내가 답장한 고민 탭 -->
+            <div class="tab-2" style="display: none">
+              <div class="tab-1-wrap">
+                <div class="tab-1-wrap-row-1">
+                  <div class="tab-1-wrap-row-1-col-1">제목</div>
+                  <div class="tab-1-wrap-row-1-col-2">날짜</div>
+                </div>
+                <% for(let i=0; i < myAnswerList.length; i++) { %>
+                <div class="receive-gomin-list">
+                  <div class="receive-gomin-list-row">
+                    <div
+                      class="receive-gomin-list-col-1"
+                      onclick="myAnswerListContentPage(`<%=myAnswerList[i].Id %>`)">
+                      <li><%=myAnswerList[i].title%></li>
+                    </div>
+                    <div class="receive-gomin-list-col-2">
+                      <li>
+                        <%= new
+                        Date(myAnswerList[i].senderPostDateTime).toLocaleString('ko-KR',
+                        { year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                        hour12: false }) %>
+                      </li>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+                <!-- 페이지 네비게이션 -->
+                <nav aria-label="Page navigation" class="pagination-container">
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item" onclick="myAnswerListChangeBack7()">
+                      <a class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                    <li
+                      class="page-item"
+                      onclick="myAnswerListChangePrevious()">
+                      <a class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                      </a>
+                    </li>
+
+                    <% for(let i=startPage; i <= endPage; i++) { %>
+                    <li
+                      class="page-item pageNumber <%= currentPage === i ? 'font-weight-bold' : '' %> page-link"
+                      onclick="myAnswerListChangePage(this)">
+                      <%= i %>
+                    </li>
+                    <% }%>
+                    <li class="page-item" onclick="myAnswerListChangeNext()">
+                      <a class="page-link" aria-label="Next">
+                        <span aria-hidden="true">&gt;</span>
+                      </a>
+                    </li>
+                    <li class="page-item" onclick="myAnswerListChangeNext7()">
+                      <a class="page-link" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- JavaScript 코드 -->
+    <script>
+      // 고민 보내기 탭
+      function myAnswerListChangeNext7() {
+        const total = parseInt("<%=total %>");
+        const endPage = "<%=endPage %>";
+        const startPage = parseInt("<%=startPage %>");
+        const currentPage = "<%=currentPage %>";
+        if (total === 0) {
+          alert("다음 고민이 없습니다.");
+          return;
+        }
+        if (currentPage === String(total)) {
+          alert("마지막 페이지입니다.");
+          return;
+        }
+        if (startPage + 6 < total) {
+          //console.log("여깅ㅇㅇ");
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "/mypage";
+
+          const input = document.createElement("input");
+          const input2 = document.createElement("input");
+          const input3 = document.createElement("input");
+
+          input.type = "text";
+          input.name = "userId";
+          input.value = "<%=userId %>";
+
+          input2.type = "text";
+          input2.name = "currentPage";
+          input2.value = "<%=startPage +7 %>";
+
+          input3.type = "text";
+          input3.name = "tab";
+          input3.value = "myAnswerList";
+
+          form.appendChild(input);
+          form.appendChild(input2);
+          form.appendChild(input3);
+          document.body.appendChild(form);
+          form.submit();
+        }
+
+        if (endPage == total) {
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "/mypage";
+
+          const input = document.createElement("input");
+          const input2 = document.createElement("input");
+          const input3 = document.createElement("input");
+          input.type = "text";
+          input.name = "userId";
+          input.value = "<%=userId %>";
+
+          input2.type = "text";
+          input2.name = "currentPage";
+          input2.value = endPage;
+
+          input3.type = "text";
+          input3.name = "tab";
+          input3.value = "myAnswerList";
+
+          form.appendChild(input);
+          form.appendChild(input2);
+          form.appendChild(input3);
+          document.body.appendChild(form);
+          form.submit();
+        }
+      }
+      function myAnswerListChangeBack7() {
+        const total = "<%=total %>";
+        const endPage = "<%=endPage %>";
+        const startPage = "<%=startPage %>";
+        const currentPage = "<%=currentPage %>";
+
+        if (startPage === "1") {
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "/mypage";
+
+          const input = document.createElement("input");
+          const input2 = document.createElement("input");
+          const input3 = document.createElement("input");
+          input.type = "text";
+          input.name = "userId";
+          input.value = "<%=userId %>";
+
+          input2.type = "text";
+          input2.name = "currentPage";
+          input2.value = "<%=startPage %>";
+
+          input3.type = "text";
+          input3.name = "tab";
+          input3.value = "myAnswerList";
+
+          form.appendChild(input);
+          form.appendChild(input2);
+          form.appendChild(input3);
+          document.body.appendChild(form);
+          form.submit();
+        } else {
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "/mypage";
+
+          const input = document.createElement("input");
+          const input2 = document.createElement("input");
+          const input3 = document.createElement("input");
+          input.type = "text";
+          input.name = "userId";
+          input.value = "<%=userId %>";
+
+          input2.type = "text";
+          input2.name = "currentPage";
+          input2.value = "<%=endPage-7 %>";
+
+          input3.type = "text";
+          input3.name = "tab";
+          input3.value = "myAnswerList";
+
+          form.appendChild(input);
+          form.appendChild(input2);
+          form.appendChild(input3);
+          document.body.appendChild(form);
+          form.submit();
+        }
+      }
+
+      function myAnswerListChangePrevious() {
+        const total = "<%=total %>";
+        const endPage = "<%=endPage %>";
+        const startPage = "<%=startPage %>";
+        const currentPage = "<%=currentPage %>";
+
+        if (currentPage == "1") {
+          return;
+        }
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/mypage";
+
+        const input = document.createElement("input");
+        const input2 = document.createElement("input");
+        const input3 = document.createElement("input");
+        input.type = "text";
+        input.name = "userId";
+        input.value = "<%=userId %>";
+
+        input2.type = "text";
+        input2.name = "currentPage";
+        input2.value = "<%=currentPage -1 %>";
+
+        input3.type = "text";
+        input3.name = "tab";
+        input3.value = "myAnswerList";
+
+        form.appendChild(input);
+        form.appendChild(input2);
+        form.appendChild(input3);
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      function myAnswerListChangeNext() {
+        const total = "<%=total %>";
+        const endPage = "<%=endPage %>";
+        const startPage = "<%=startPage %>";
+        const currentPage = "<%=currentPage %>";
+        if (total === "0") {
+          alert("다음 고민이 없습니다.");
+          return;
+        }
+        if (currentPage === total) {
+          alert("마지막 페이지입니다.");
+          return;
+        }
+        //console.log("현제 토탈 값은 =", total);
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/mypage";
+
+        const input = document.createElement("input");
+        const input2 = document.createElement("input");
+        const input3 = document.createElement("input");
+        input.type = "text";
+        input.name = "userId";
+        input.value = "<%=userId %>";
+
+        input2.type = "text";
+        input2.name = "currentPage";
+        input2.value = "<%=currentPage+1 %>";
+
+        input3.type = "text";
+        input3.name = "tab";
+        input3.value = "myAnswerList";
+
+        form.appendChild(input);
+        form.appendChild(input2);
+        form.appendChild(input3);
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      function myAnswerListChangePage(page) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/mypage";
+
+        const input = document.createElement("input");
+        const input2 = document.createElement("input");
+        const input3 = document.createElement("input");
+        input.type = "text";
+        input.name = "userId";
+        input.value = "<%=userId %>";
+
+        input2.type = "text";
+        input2.name = "currentPage";
+        input2.value = page.innerText;
+
+        input3.type = "text";
+        input3.name = "tab";
+        input3.value = "myAnswerList";
+
+        form.appendChild(input);
+        form.appendChild(input2);
+        form.appendChild(input3);
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      function toggleTab(button, tabSelector) {
+        //console.log("현재 페이지 = ", "<%=currentPage %>");
+        document.querySelectorAll(".tab, .tab-2").forEach((tab) => {
+          tab.style.display = "none";
+        });
+        document.querySelector(tabSelector).style.display = "block";
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        button.classList.add("active");
+        button.style.animation = "none";
+        button.offsetHeight; // reflow
+        button.style.animation = null;
+
+        if (button.className.includes("tab_send_btn")) {
+          //console.log("여기");
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "/mypage";
+
+          const input = document.createElement("input");
+          const input2 = document.createElement("input");
+          const input3 = document.createElement("input");
+          input.type = "text";
+          input.name = "userId";
+          input.value = "<%=userId %>";
+
+          input2.type = "text";
+          input2.name = "currentPage";
+          input2.value = "1";
+
+          input3.type = "text";
+          input3.name = "tab";
+          input3.value = "myWorryList";
+
+          form.appendChild(input);
+          form.appendChild(input2);
+          form.appendChild(input3);
+          document.body.appendChild(form);
+          form.submit();
+        }
+      }
+
+      function myAnswerListContentPage(Id) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/myAnswerList";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = "Id";
+        input.value = Id;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      //////////////////////////////////////////////////////////
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".tab_receive_btn").click();
+        document.querySelectorAll(".gomin-link").forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const userId = this.getAttribute("data-gomin-id");
+            const isSent = this.classList.contains("send");
+            if (isSent) {
+              window.location.href = `/myWorryList/${userId}`;
+            } else {
+              window.location.href = `/myAnswerList/${userId}`;
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

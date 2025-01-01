@@ -1,0 +1,7 @@
+.env
+node_modules/
+config.json
+config.js
+.prettierrc
+.DS_Store
+.vscode

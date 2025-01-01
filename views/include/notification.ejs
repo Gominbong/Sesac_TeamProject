@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notification</title>
+    <style>
+      .announcement-container {
+        width: 950px;
+        height: 50px;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+      }
+
+      .announcement-box {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        width: 100%;
+        bottom: -100%;
+        opacity: 0;
+        animation: slide-up 3s ease forwards;
+        z-index: 1;
+      }
+
+      .announcement-box > img {
+        width: 40px;
+        margin-right: 10px;
+      }
+
+      @keyframes slide-up {
+        0% {
+          bottom: -100%;
+          opacity: 0;
+        }
+        100% {
+          bottom: 0;
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="announcement-container" id="announcement-container"></div>
+
+    <script>
+      const announcements = [
+        "시스템 점검 예정입니다.",
+        "새로운 기능이 업데이트되었습니다.",
+        "개인의 신상이 포함된 정보는 유의하여 작성하시기 바랍니다다.",
+        "보안 관련 공지입니다.",
+        "욕설은 제한됩니다! 법적 조치를 받을 수 있습니다.",
+        "고객센터 운영 시간이 변경되었습니다.",
+      ];
+
+      let currentIndex = 0;
+
+      function showAnnouncement() {
+        const container = document.getElementById("announcement-container");
+
+        const box = document.createElement("div");
+        box.classList.add("announcement-box");
+
+        const img = document.createElement("img");
+        img.src = "/static/images/speaker.png";
+        img.alt = "speaker";
+
+        const textContainer = document.createElement("div");
+        const span = document.createElement("span");
+        span.innerText = announcements[currentIndex];
+        textContainer.appendChild(span);
+
+        box.appendChild(img);
+        box.appendChild(textContainer);
+        container.appendChild(box);
+
+        currentIndex = (currentIndex + 1) % announcements.length;
+
+        setTimeout(showAnnouncement, 4000);
+      }
+
+      // 페이지가 로드되면 첫 번째 공지사항 표시 시작
+      window.onload = function () {
+        showAnnouncement();
+      };
+    </script>
+  </body>
+</html>
