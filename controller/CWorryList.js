@@ -86,12 +86,12 @@ exports.myWorryListPage = async (req, res) => {
 exports.testCreateWorryList = async (req, res) => {
   try {
     const findUserId = await User.findAll({
-      order: [["userId", "DESC"]],
+      order: [["Id", "DESC"]],
       limit: 10,
     });
 
     for (let i = 0; i < 10; i++) {
-      let userId = findUserId[i].userId;
+      let userId = findUserId[i].Id;
       //console.log("userId 확인 ===", userId);
       for (let j = 0; j < 10; j++) {
         const newWorryList = await WorryList.create({
@@ -279,7 +279,7 @@ exports.updateTempRateresponder = async (req, res) => {
     }
 
     const findUser = await User.findOne({
-      where: { userId: findWorryList.responder_Id },
+      where: { Id: findWorryList.responder_Id },
     });
 
     await findUser.update({

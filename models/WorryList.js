@@ -45,14 +45,14 @@ const WorryListModel = (sequelize, Sequelize) => {
         allowNull: false,
         references: {
           model: User,
-          key: "userId",
+          key: "Id",
         },
       },
       responder_Id: {
         type: Sequelize.INTEGER,
         references: {
           model: User,
-          key: "userId",
+          key: "Id",
         },
       },
     },

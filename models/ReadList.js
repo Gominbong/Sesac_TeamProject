@@ -18,7 +18,7 @@ const ReadListModel = (sequelize, Sequelize) => {
         allowNull: false,
         references: {
           model: User,
-          key: "userId",
+          key: "Id",
         },
       },
       worryList_Id: {

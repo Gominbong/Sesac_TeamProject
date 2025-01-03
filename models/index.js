@@ -27,17 +27,17 @@ const ReadListModel = require("./ReadList")(sequelize, Sequelize);
 
 WorryListModel.belongsTo(UserModel, {
   foreignKey: "sender_Id",
-  targetKey: "userId",
+  targetKey: "Id",
 });
 
 WorryListModel.belongsTo(UserModel, {
   foreignKey: "responder_Id",
-  targetKey: "userId",
+  targetKey: "Id",
 });
 
 ReadListModel.belongsTo(UserModel, {
   foreignKey: "user_Id",
-  targetKey: "userId",
+  targetKey: "Id",
 });
 
 ReadListModel.belongsTo(WorryListModel, {

@@ -40,7 +40,7 @@ exports.mypage2 = async (req, res) => {
     const payload = jwt.split(".")[1];
     const decodedPayload = atob(payload);
     let { userId, currentPage, tab } = req.body;
-    const user = await User.findOne({ where: { userId } });
+    const user = await User.findOne({ where: { Id: userId } });
 
     if (tab === "myAnswerList") {
       let limit = 6;
@@ -300,7 +300,7 @@ exports.userReceviedMsg = async (req, res) => {
   });
   const user = await User.findOne({
     where: {
-      userId,
+      Id: userId,
     },
   });
   //console.log("myAnswerList: ", myAnswerList);
@@ -339,7 +339,7 @@ exports.userSendedMsg = async (req, res) => {
 
   const user = await User.findOne({
     where: {
-      userId,
+      Id: userId,
     },
   });
 
@@ -395,7 +395,7 @@ exports.testUserCreate = async (req, res) => {
 
     for (let i = 0; i < 10; i++) {
       const findUserId = await User.findAll({
-        order: [["userId", "DESC"]],
+        order: [["Id", "DESC"]],
         limit: 1,
       });
       if (findUserId.length === 0) {
@@ -408,7 +408,7 @@ exports.testUserCreate = async (req, res) => {
         continue;
       }
       const newUser = await User.create({
-        email: "a" + (findUserId[0].userId + 1) + "@naver.com",
+        email: "a" + (findUserId[0].Id + 1) + "@naver.com",
         password: hashedPw,
         question: "출신 초등학교 이름은?",
         answer: "qqq",
@@ -547,13 +547,9 @@ exports.loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
-      const token = jwt.sign(
-        { id: user.userId, email: user.email },
-        SECRET_KEY,
-        {
-          expiresIn: "1d",
-        }
-      );
+      const token = jwt.sign({ id: user.Id, email: user.email }, SECRET_KEY, {
+        expiresIn: "1d",
+      });
       res.cookie("jwtToken", token, {
         httpOnly: false,
         secure: false,
