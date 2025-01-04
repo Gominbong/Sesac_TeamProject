@@ -6,7 +6,8 @@
     <title>GOMIN Pooljang</title>
     <link
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
     <link rel="stylesheet" href="../static/css/mypage.css" />
   </head>
   <body>
@@ -21,7 +22,8 @@
                 <img
                   src="../static/images/thermometer.png"
                   alt="온도계"
-                  class="temp-icon" />
+                  class="temp-icon"
+                />
                 <span class="temperatureText">나의 온도</span>
                 <span class="temperature"><%=user.temp %></span>
               </div>
@@ -30,14 +32,16 @@
               <div class="main-table-col">
                 <button
                   class="tab_send_btn tab-btn"
-                  onclick="toggleTab(this, '.tab')">
+                  onclick="toggleTab(this, '.tab')"
+                >
                   내가 보낸 고민
                 </button>
               </div>
               <div class="main-table-col">
                 <button
                   class="tab_receive_btn tab-btn"
-                  onclick="toggleTab(this, '.tab-2')">
+                  onclick="toggleTab(this, '.tab-2')"
+                >
                   내가 답장한 고민
                 </button>
               </div>
@@ -55,7 +59,8 @@
                   <div class="send-gomin-list-row">
                     <div
                       class="send-gomin-list-col-1"
-                      onclick="myWorryListContentPage(`<%=myWorryList[i].Id %>`)">
+                      onclick="myWorryListContentPage(`<%=myWorryList[i].Id %>`)"
+                    >
                       <li><%=myWorryList[i].title%></li>
                     </div>
                     <div class="send-gomin-list-col-2">
@@ -87,7 +92,8 @@
                     <% for(let i=startPage; i <= endPage; i++) { %>
                     <li
                       class="page-item pageNumber <%= currentPage === i ? 'font-weight-bold' : '' %> page-link"
-                      onclick="worryListChangePage(this)">
+                      onclick="worryListChangePage(this)"
+                    >
                       <%= i %>
                     </li>
                     <% }%>
@@ -141,7 +147,8 @@
                     </li>
                     <li
                       class="page-item"
-                      onclick="myAnswerListChangePrevious()">
+                      onclick="myAnswerListChangePrevious()"
+                    >
                       <a class="page-link" aria-label="Previous">
                         <span aria-hidden="true">&lt;</span>
                       </a>
@@ -150,7 +157,8 @@
                     <% for(let i=startPage; i <= endPage; i++) { %>
                     <li
                       class="page-item pageNumber <%= currentPage === i ? 'font-weight-bold' : '' %> page-link"
-                      onclick="myAnswerListChangePage(this)">
+                      onclick="myAnswerListChangePage(this)"
+                    >
                       <%= i %>
                     </li>
                     <% }%>

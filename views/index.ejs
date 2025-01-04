@@ -11,9 +11,7 @@
   <body class="full-height">
     <div
       id="data-container"
-      data-jwt="<%= jwt %>"
       data-login-status="<%= loginStatus %>"
-      data-decoded-Payload="<%= decodedPayload %>"
       data-userId="<%= userId %>"
     ></div>
     <div class="header-full-width"><%- include('include/header') %></div>
@@ -125,6 +123,13 @@
                 />
               </label>
               <button type="button" onclick="joinFn()">회원 가입</button>
+              <button
+                style="margin-top: 10px"
+                type="button"
+                onclick="loginForm()"
+              >
+                로그인
+              </button>
             </form>
           </div>
 

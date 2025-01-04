@@ -2,9 +2,7 @@ const modal = document.querySelector(".modal");
 const forgetPwModal = document.querySelector(".forgot-pw-modal");
 
 const dataContainer = document.getElementById("data-container");
-const jwt = dataContainer.getAttribute("data-jwt");
 const loginStatus = dataContainer.getAttribute("data-login-status");
-const decodedPayload = dataContainer.getAttribute("data-decoded-payload");
 const userId = dataContainer.getAttribute("data-userId");
 
 /* 첫 접속 시 화면 (로그인 모달) */
@@ -13,24 +11,13 @@ window.addEventListener("load", () => {
   //console.log("Login Status: ", loginStatus);
   //console.log("Decoded Payload: ", decodedPayload);
   //console.log("로그인회원 기본키 userId =  ", userId);
-  if (loginStatus === "true" && jwt != null) {
+  if (loginStatus === "true") {
     return;
   }
 
-  document.querySelector(".id_error").style.display = "none";
-  document.querySelector(".pw_error").style.display = "none";
-  document.querySelector(".toggle2").style.display = "none";
-
-  modal.style.display = "flex";
-
-  // 로그인 하지 않았을 때 모달 닫기 불가능
-  const closeBtns = document.querySelectorAll(".closeX, .closeBtn");
-  closeBtns.forEach((btn) => {
-    btn.style.display = "none";
-  });
-
-  // 페이지 새로고침 시 firstClick을 true로 리셋
-  firstClick = true;
+  // document.querySelector(".id_error").style.display = "none";
+  // document.querySelector(".pw_error").style.display = "none";
+  // document.querySelector(".toggle2").style.display = "none";
 });
 
 /* 회원 가입 모달 */
@@ -102,9 +89,6 @@ async function rejectLetter() {
       method: "post",
       url: "/worryList",
       data: data,
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
     });
 
     const { result, randomWorryList, message } = res.data;
@@ -124,13 +108,16 @@ async function rejectLetter() {
 
 /**
  * 고민 받기
- * 버튼 클릭 시
- * 새로고침
  */
 
 let firstClick = true;
 
 async function receiveLetter() {
+  if (!userId) {
+    alert("로그인 후 이용해주세요!");
+    return;
+  }
+
   const formLetter = document.querySelector('form[name="form-letter"]');
   const formReply = document.querySelector('form[name="form-reply"]');
   const getId = document.getElementById("getId");
@@ -163,12 +150,10 @@ async function receiveLetter() {
         method: "post",
         url: "/worryList",
         data: data,
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
       });
 
       const { result, randomWorryList, message } = res.data;
+
       //console.log(result);
       if (result) {
         const title = document.querySelector(".replyTitle");
@@ -197,6 +182,10 @@ async function receiveLetter() {
  */
 
 async function sendContent() {
+  if (!userId) {
+    alert("로그인 후 이용해주세요!");
+    return;
+  }
   const form = document.forms["form-letter"];
   const title = form.title.value;
   const senderContent = form.message.value;
@@ -218,14 +207,14 @@ async function sendContent() {
       method: "post",
       url: "/addWorryList",
       data: data,
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
     });
     const { result, message } = res.data;
     if (result) {
       alert(message);
       form.reset();
+    } else {
+      alert(message);
+      window.location.reload();
     }
   } catch (e) {
     console.error("Error send message:", e);
@@ -257,18 +246,11 @@ async function submitReply() {
   };
 
   try {
-    const res = await axios(
-      {
-        method: "patch",
-        url: "/addAnswer",
-        data: data,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
-    );
+    const res = await axios({
+      method: "patch",
+      url: "/addAnswer",
+      data: data,
+    });
     const { result, message } = res.data;
     if (result) {
       alert(message);
@@ -311,7 +293,7 @@ async function loginFn() {
       data: data,
     });
 
-    const { token, result, message } = res.data;
+    const { result, message } = res.data;
     if (result) {
       // localStorage에 저장
       // localStorage.setItem("token", token);
@@ -373,6 +355,13 @@ async function duplCheck() {
   } catch (e) {
     console.error("Error email duplication:", e);
   }
+}
+
+function loginForm() {
+  const formLogin = document.getElementById("login-screen");
+  const formJoin = document.getElementById("join-screen");
+  formLogin.style.display = "block";
+  formJoin.style.display = "none";
 }
 
 /**
@@ -490,19 +479,11 @@ async function checkAnswer() {
   };
 
   try {
-    const res = await axios(
-      {
-        method: "post",
-        url: "/find-account",
-        data: data,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await axios({
+      method: "post",
+      url: "/find-account",
+      data: data,
+    });
 
     const { result, message } = res.data;
     if (result) {
@@ -560,19 +541,11 @@ async function updatePw() {
   };
 
   try {
-    const res = await axios(
-      {
-        method: "post",
-        url: "/makeNewPw",
-        data: data,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await axios({
+      method: "post",
+      url: "/makeNewPw",
+      data: data,
+    });
     const { result, message } = res.data;
     if (result) {
       alert(message);

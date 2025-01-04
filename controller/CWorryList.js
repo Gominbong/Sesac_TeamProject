@@ -1,7 +1,6 @@
 const { Op, where } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
-
 const {
   ReadList,
   User,
@@ -11,77 +10,8 @@ const {
 } = require("../models");
 const { promisify } = require("util");
 const readFileAsync = promisify(fs.readFile);
-
-exports.myWorryListPage = async (req, res) => {
-  try {
-    let { userId, currentPage } = req.body;
-    let limit = 6;
-    //console.log("userId===", userId);
-    //console.log("currentPage===", currentPage);
-
-    currentPage = parseInt(currentPage);
-
-    const totalMyWorryList = await WorryList.findAll({
-      where: { sender_Id: userId },
-    });
-    //console.log("totalMyWorryList===", totalMyWorryList.length);
-    let total = Math.ceil(totalMyWorryList.length / limit);
-    //console.log("total===", total);
-
-    if (totalMyWorryList.length == 0) {
-      let startPage = 0;
-      let endPage = 0;
-      res.send({
-        result: true,
-        startPage,
-        endPage,
-        message: "고민이 없습니다.",
-      });
-      return;
-    }
-    if (total == 1) {
-      //console.log("여여여기기22");
-      let startPage = 1;
-      let endPage = 1;
-      res.send({
-        result: true,
-        startPage,
-        endPage,
-        myWorryList: totalMyWorryList,
-      });
-      return;
-    }
-
-    const myWorryList = await WorryList.findAll({
-      attributes: [
-        "Id",
-        "sender_Id",
-        "title",
-        "senderContent",
-        "senderSwearWord",
-        "senderPostDateTime",
-        "responder_Id",
-        "responderContent",
-        "responderSwearWord",
-        "responderPostDateTime",
-        "tempRateresponder",
-        "checkReviewScore",
-      ],
-      where: { sender_Id: userId },
-      order: [["Id", "DESC"]],
-      limit,
-      offset: limit * (currentPage - 1),
-    });
-
-    let startPage = Math.floor((currentPage - 1) / 7) * 7 + 1;
-    let endPage = startPage + 6;
-
-    res.send({ result: true, myWorryList, startPage, endPage });
-  } catch (error) {
-    //console.log("post /myWorryList error", error);
-    res.status(500).send({ message: "서버 에러" });
-  }
-};
+const CUser = require("./CUser");
+const jwtVlidation = CUser.jwtVlidation;
 // 도메인 룰 테스트용 고민 10명의 유저 각각 10개씩 총 100개 생성성
 exports.testCreateWorryList = async (req, res) => {
   try {
@@ -115,6 +45,17 @@ exports.testCreateWorryList = async (req, res) => {
 };
 
 exports.createWorryList = async (req, res) => {
+  const id = jwtVlidation(req, res);
+
+  console.log("id===", id);
+  if (!id) {
+    res.send({
+      result: false,
+      message: "jwt토큰 유효시간 검증실패 로그인 다시 하세요",
+    });
+    return;
+  }
+
   try {
     const { title, senderContent, userId } = req.body;
     const filePath = path.join(__dirname, "../config/badwords.txt");
@@ -154,8 +95,6 @@ exports.createWorryList = async (req, res) => {
 
 exports.answerWorryList = async (req, res) => {
   try {
-    const token =
-      req.headers.authorization && req.headers.authorization.split(" ")[1];
     //Id 는 WorryList 테이블의 Id
     const { Id, userId, responderContent } = req.body;
     const filePath = path.join(__dirname, "../config/badwords.txt");
@@ -297,6 +236,7 @@ exports.myWorryListContent = async (req, res) => {
   // 나의 고민에 답변이 달렸을경우 checkReviewScore가 N로 바뀜
   // checkReviewScore 이 N면 리뷰점수를 줄수 있도록 해야함
   // 리뷰점수를 줬으면 N 값에서 Y값으로 변경하고 Y값이면 리뷰점수를 줄수 없도록 해야함
+
   try {
     const { Id } = req.body;
     const myWorryListContent = await WorryList.findOne({
@@ -325,6 +265,7 @@ exports.myWorryListContent = async (req, res) => {
 
 exports.myWorryList = async (req, res) => {
   try {
+    console.log("나의 고민 내용 안 입니다.");
     const { userId } = req.body;
     const myWorryList = await WorryList.findAll({
       attributes: [

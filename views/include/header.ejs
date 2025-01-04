@@ -18,50 +18,37 @@
                 class="logo"
                 src="../static/images/logo.png"
                 alt="logo"
-                onclick="location.href='/'" />
+                onclick="location.href='/'"
+              />
             </div>
-            <div class="container menu-container"></div>
+            <div class="container menu-container">
+              <% if(userId){ %>
+              <button class="header-menu" onclick="menu2_1()">
+                마이페이지
+              </button>
+              <button class="header-menu" onclick="menu2_2()">정보수정</button>
+              <button class="header-menu" onclick="menu2_3()">로그아웃</button>
+              <button class="header-menu" onclick="menu2_4()">회원탈퇴</button>
+              <% }else{ %>
+              <button class="header-menu" onclick="login()">로그인</button>
+              <% } %>
+            </div>
           </div>
         </div>
       </div>
     </header>
 
     <script>
-      function getCookie(name) {
-        const cookies = document.cookie.split("; ");
-        for (let cookie of cookies) {
-          const [key, value] = cookie.split("=");
-          if (key === name) return value;
-        }
-        return null;
+      function login() {
+        const modal = document.querySelector(".modal");
+        const forgetPwModal = document.querySelector(".forgot-pw-modal");
+        modal.style.display = "flex";
       }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        //console.log("DOMContentLoaded event triggered!"); // DOMContentLoaded 확인
-        const menuContainer = document.querySelector(".menu-container");
-
-        // Render menu based on jwtToken
-        const jwtToken = getCookie("jwtToken");
-        //console.log("znzlznzlznzlznzl", jwtToken); // 디버깅 로그
-        //console.log("JWT Token:", jwtToken); // 쿠키 값 확인
-
-        menuContainer.innerHTML = jwtToken
-          ? `
-            <button class="header-menu" onclick="menu2_1()">마이페이지</button>
-            <button class="header-menu" onclick="menu2_2()">정보수정</button>
-            <button class="header-menu" onclick="menu2_3()">로그아웃</button>
-            <button class="header-menu" onclick="menu2_4()">회원탈퇴</button>
-          `
-          : `
-            <button class="header-menu" onclick="location.href='/'">로그인</button>
-          `;
-      });
 
       // Navigate to My Page
       function menu2_1() {
-        const jwt = "<%= jwt %>";
         const loginStatus = "<%= loginStatus %>";
-        const decodedPayload = "<%= decodedPayload %>";
+
         const userId = "<%= userId %>";
 
         if (userId) {
@@ -101,14 +88,12 @@
 
       // Logout
       async function menu2_3() {
-        const jwtToken = getCookie("jwtToken");
-
         try {
-          const res = await axios.get("/logout2", {
-            headers: { Authorization: `Bearer ${jwtToken}` },
+          const res = await axios({
+            mothod: "GET",
+            url: "/logout",
           });
 
-          //console.log("Logout Response:", res.data);
           alert("로그아웃 되었습니다.");
           location.href = "/";
         } catch (error) {

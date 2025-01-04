@@ -8,9 +8,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const Id = dataContainer.getAttribute("data-myWorryList");
   let currentRating = 0;
 
-  btn.onclick = function () {
-    modal.style.display = "block";
-  };
+  document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("ratingButton"); // 버튼 요소 가져오기
+    const modal = document.getElementById("ratingModal"); // 모달 요소 가져오기
+
+    if (btn && modal) {
+      btn.onclick = function () {
+        modal.style.display = "block";
+      };
+    } else {
+      console.error(
+        'Element with id "yourButtonId" or "yourModalId" not found'
+      );
+    }
+  });
 
   closeBtn.onclick = function () {
     modal.style.display = "none";
