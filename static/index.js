@@ -1,24 +1,8 @@
 const modal = document.querySelector(".modal");
 const forgetPwModal = document.querySelector(".forgot-pw-modal");
-
 const dataContainer = document.getElementById("data-container");
 const loginStatus = dataContainer.getAttribute("data-login-status");
 const userId = dataContainer.getAttribute("data-userId");
-
-/* 첫 접속 시 화면 (로그인 모달) */
-window.addEventListener("load", () => {
-  //console.log("JWT: ", jwt);
-  //console.log("Login Status: ", loginStatus);
-  //console.log("Decoded Payload: ", decodedPayload);
-  //console.log("로그인회원 기본키 userId =  ", userId);
-  if (loginStatus === "true") {
-    return;
-  }
-
-  // document.querySelector(".id_error").style.display = "none";
-  // document.querySelector(".pw_error").style.display = "none";
-  // document.querySelector(".toggle2").style.display = "none";
-});
 
 /* 회원 가입 모달 */
 document.addEventListener("DOMContentLoaded", function () {
@@ -60,7 +44,7 @@ closePwBtn.addEventListener("click", function () {
 });
 
 // 로그인 모달 닫기 (X)
-const closeX = document.querySelector(".modal_body .closeX");
+const closeX = document.querySelector(".closeX");
 closeX.addEventListener("click", function () {
   closeModal(modal);
 });
