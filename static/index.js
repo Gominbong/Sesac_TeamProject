@@ -1,7 +1,6 @@
 const modal = document.querySelector(".modal");
 const forgetPwModal = document.querySelector(".forgot-pw-modal");
 const dataContainer = document.getElementById("data-container");
-const loginStatus = dataContainer.getAttribute("data-login-status");
 const userId = dataContainer.getAttribute("data-userId");
 const message = dataContainer.getAttribute("data-message");
 

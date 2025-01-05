@@ -11,11 +11,9 @@ exports.main = (req, res) => {
   const id = exports.jwtVlidation(req, res);
   console.log("userId===", id);
   if (id) {
-    const loginStatus = req.cookies.loginStatus;
-    console.log("loginStatus===", loginStatus);
-    res.render("index", { loginStatus, userId: id, message: null });
+    res.render("index", { userId: id, message: null });
   } else {
-    res.render("index", { loginStatus: "false", userId: null, message: null });
+    res.render("index", { userId: null, message: null });
   }
 };
 
@@ -35,15 +33,10 @@ exports.jwtVlidation = (req, res) => {
       httpOnly: true,
       path: "/",
     });
-    res.cookie("loginStatus", "true", {
-      httpOnly: true,
-      path: "/",
-    });
     return decoded.id;
   } catch (error) {
     console.log("jwt토큰이 만료되었습니다 : ", error);
     res.clearCookie("jwtToken");
-    res.clearCookie("loginStatus");
   }
 };
 
@@ -52,7 +45,6 @@ exports.mypage = async (req, res) => {
   console.log("id===", id);
   if (!id) {
     res.render("index", {
-      loginStatus: "false",
       userId: null,
       result: false,
       message: "jwt 유효시간 검증실패 다시 로그인 해주세요",
@@ -82,9 +74,6 @@ exports.mypage = async (req, res) => {
         let endPage = 1;
         res.render("mypageAnswer", {
           result: true,
-
-          loginStatus: "true",
-
           userId,
           myAnswerList: totalMyAnswerList,
           myWorryList: 1,
@@ -135,7 +124,6 @@ exports.mypage = async (req, res) => {
         //console.log("endPage===", endPage);
         res.render("mypageAnswer", {
           result: true,
-          loginStatus: "true",
           userId,
           myAnswerList,
           myWorryList: 1,
@@ -168,7 +156,6 @@ exports.mypage = async (req, res) => {
         let endPage = 1;
         res.render("mypage", {
           result: true,
-          loginStatus: "true",
           userId,
           myWorryList: totalMyWorryList,
           myAnswerList: 1,
@@ -219,7 +206,6 @@ exports.mypage = async (req, res) => {
         //console.log("endPage===", endPage);
         res.render("mypage", {
           result: true,
-          loginStatus: "true",
           userId,
           myWorryList,
           myAnswerList: 1,
@@ -240,7 +226,6 @@ exports.userReceviedMsg = async (req, res) => {
   console.log("id===", id);
   if (!id) {
     res.render("index", {
-      loginStatus: "false",
       userId: null,
       result: false,
       message: "jwt 유효시간 만료 다시 로그인 해주세요",
@@ -262,7 +247,6 @@ exports.userReceviedMsg = async (req, res) => {
   res.render("myAnswerList", {
     myAnswerList,
     user,
-    loginStatus: "true",
     userId: id,
   });
 };
@@ -275,7 +259,6 @@ exports.userSendedMsg = async (req, res) => {
   console.log("id===", id);
   if (!id) {
     res.render("index", {
-      loginStatus: "false",
       userId: null,
       result: false,
       message: "jwt 유효시간 만료 다시 로그인 해주세요",
@@ -296,7 +279,6 @@ exports.userSendedMsg = async (req, res) => {
   res.render("myWorryList", {
     myWorryList,
     user,
-    loginStatus: "true",
     userId: id,
   });
 };
@@ -426,10 +408,6 @@ exports.loginUser = async (req, res) => {
         httpOnly: true,
         path: "/",
       });
-      res.cookie("loginStatus", "true", {
-        httpOnly: true,
-        path: "/",
-      });
       return res.send({ result: true, message: "로그인 성공" });
     } else {
       return res.send({ result: false, message: "invalid_password" });
@@ -539,7 +517,6 @@ exports.logout = async (req, res) => {
   try {
     console.log("logout2 호출됨");
     res.clearCookie("jwtToken");
-    res.clearCookie("loginStatus");
     res.status(200).send({ result: true, message: "로그아웃 성공" });
   } catch (error) {
     console.error("logout error:", error.message);
@@ -599,7 +576,6 @@ exports.deleteAccount = async (req, res) => {
     );
 
     res.clearCookie("jwtToken", { path: "/" });
-    res.clearCookie("loginStatus", { path: "/" });
     res.send({
       success: true,
       message: "계정이 성공적으로 비활성화되었습니다.",
