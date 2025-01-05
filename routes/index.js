@@ -16,7 +16,11 @@ router.patch("/change-pw", UserController.changePw);
 router.post("/find-account", UserController.findAccount);
 router.post("/deleteAccount", UserController.deleteAccount);
 router.post("/makeNewPw", UserController.makeNewPw);
+
+//고민봉 나의 고민 답변 내용 가져오기
 router.post("/myAnswerList", UserController.userReceviedMsg);
+
+//고민봉 나의 고민 목록 내용 가져오기
 router.post("/myWorryList", UserController.userSendedMsg);
 
 //고민봉 logout
@@ -34,17 +38,11 @@ router.patch("/updateTemp", WorryListController.updateTempRateresponder);
 //고민봉 유저 고민 등록 row생성
 router.post("/addWorryList", WorryListController.createWorryList);
 
-//고민봉 나의 고민 목록 내용 가져오기
-router.post("/myWorryList", WorryListController.myWorryList);
-
 //내가 보낸 고민 내용
 router.post("/mypage", UserController.mypage);
 
 //고민봉 나의 답변 목록 row 가져오기
 router.post("/myAnswerList", WorryListController.myAnswerList);
-
-//고민봉 내가 답장한 고민 내용
-router.post("/myAnswerList/content", WorryListController.myAnswerListContent);
 
 //고민봉 내가 본 고민 목록  row생성
 router.post("/addReadList", ReadListController.createReadList);

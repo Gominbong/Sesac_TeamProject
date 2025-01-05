@@ -3,6 +3,13 @@ const forgetPwModal = document.querySelector(".forgot-pw-modal");
 const dataContainer = document.getElementById("data-container");
 const loginStatus = dataContainer.getAttribute("data-login-status");
 const userId = dataContainer.getAttribute("data-userId");
+const message = dataContainer.getAttribute("data-message");
+
+window.onload = function () {
+  if (message) {
+    alert(message);
+  }
+};
 
 /* 회원 가입 모달 */
 document.addEventListener("DOMContentLoaded", function () {
@@ -84,6 +91,7 @@ async function rejectLetter() {
       getId.value = randomWorryList[0].Id;
     } else {
       alert(message);
+      document.location.reload();
     }
   } catch (e) {
     console.error("Error send message:", e);
@@ -148,6 +156,7 @@ async function receiveLetter() {
         getId.value = randomWorryList[0].Id;
       } else {
         alert(message);
+        document.location.reload();
       }
     } catch (e) {
       console.error("Error send message:", e);

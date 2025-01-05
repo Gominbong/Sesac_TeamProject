@@ -13,13 +13,13 @@ exports.main = (req, res) => {
   if (id) {
     const loginStatus = req.cookies.loginStatus;
     console.log("loginStatus===", loginStatus);
-    res.render("index", { loginStatus, userId: id });
+    res.render("index", { loginStatus, userId: id, message: null });
   } else {
-    res.render("index", { loginStatus: "false", userId: null });
+    res.render("index", { loginStatus: "false", userId: null, message: null });
   }
 };
 
-module.exports.jwtVlidation = (req, res) => {
+exports.jwtVlidation = (req, res) => {
   const jwtToken = req.cookies.jwtToken;
   if (jwtToken == null) {
     console.log("jwt토큰이 존재하지 않습니다.");
@@ -29,7 +29,7 @@ module.exports.jwtVlidation = (req, res) => {
     const decoded = jwt.verify(jwtToken, SECRET_KEY);
     console.log("jwt토큰이 유효합니다. +1시간 jwt토큰 재발급", decoded);
     const token = jwt.sign({ id: decoded.id }, SECRET_KEY, {
-      expiresIn: "10s",
+      expiresIn: "2h",
     });
     res.cookie("jwtToken", token, {
       httpOnly: true,
@@ -55,7 +55,7 @@ exports.mypage = async (req, res) => {
       loginStatus: "false",
       userId: null,
       result: false,
-      message: "로그인이 필요합니다.",
+      message: "jwt 유효시간 검증실패 다시 로그인 해주세요",
     });
     return;
   }
@@ -243,7 +243,7 @@ exports.userReceviedMsg = async (req, res) => {
       loginStatus: "false",
       userId: null,
       result: false,
-      message: "로그인이 필요합니다.",
+      message: "jwt 유효시간 만료 다시 로그인 해주세요",
     });
     return;
   }
@@ -255,7 +255,7 @@ exports.userReceviedMsg = async (req, res) => {
   });
   const user = await User.findOne({
     where: {
-      Id,
+      Id: myAnswerList.responder_Id,
     },
   });
 
@@ -268,6 +268,9 @@ exports.userReceviedMsg = async (req, res) => {
 };
 
 exports.userSendedMsg = async (req, res) => {
+  // 나의 고민에 답변이 달렸을경우 checkReviewScore가 N로 바뀜
+  // checkReviewScore 이 N면 리뷰점수를 줄수 있도록 해야함
+  // 리뷰점수를 줬으면 N 값에서 Y값으로 변경하고 Y값이면 리뷰점수를 줄수 없도록 해야함
   const id = exports.jwtVlidation(req, res);
   console.log("id===", id);
   if (!id) {
@@ -275,7 +278,7 @@ exports.userSendedMsg = async (req, res) => {
       loginStatus: "false",
       userId: null,
       result: false,
-      message: "로그인이 필요합니다.",
+      message: "jwt 유효시간 만료 다시 로그인 해주세요",
     });
     return;
   }
@@ -287,7 +290,7 @@ exports.userSendedMsg = async (req, res) => {
   });
   const user = await User.findOne({
     where: {
-      Id,
+      Id: myWorryList.sender_Id,
     },
   });
   res.render("myWorryList", {
@@ -417,7 +420,7 @@ exports.loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       const token = jwt.sign({ id: user.Id }, SECRET_KEY, {
-        expiresIn: "10s",
+        expiresIn: "2h",
       });
       res.cookie("jwtToken", token, {
         httpOnly: true,
@@ -549,24 +552,24 @@ exports.logout = async (req, res) => {
  * 작성자: 하나래
  */
 exports.deleteAccount = async (req, res) => {
+  const id = exports.jwtVlidation(req, res);
+  console.log("id===", id);
+  if (!id) {
+    return res.send({
+      success: false,
+      message: "jwt 유효시간 만료 다시 로그인 해주세요",
+    });
+  }
   try {
-    const userInfo = await exports.validation(req);
-
-    if (!userInfo?.email) {
-      console.error("Validation did not return a valid email");
-      return res.send({
-        success: false,
-        message: "사용자 인증에 실패했습니다.",
-      });
-    }
-
-    const { password } = req.body;
+    const { password, userId } = req.body;
+    console.log("password:", password);
+    console.log("userId:", userId);
     if (!password) {
       console.error("Password not provided in request");
       return res.send({ success: false, message: "비밀번호가 필요합니다." });
     }
 
-    const user = await User.findOne({ where: { email: userInfo.email } });
+    const user = await User.findOne({ where: { Id: userId } });
     if (!user) {
       console.error("User not found in database");
       return res.send({
@@ -577,7 +580,6 @@ exports.deleteAccount = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.error("Password mismatch for user:", userInfo.email);
       return res.send({
         success: false,
         message: "비밀번호가 일치하지 않습니다.",
@@ -585,15 +587,15 @@ exports.deleteAccount = async (req, res) => {
     }
 
     const salt = await bcrypt.genSalt(SALT);
-    const hashedPw = await bcrypt.hash("deleted_password", salt);
+    const hashedPw = await bcrypt.hash(password, salt);
 
     await User.update(
       {
-        email: `deleted_${user.userId}@example.com`,
+        email: `deleted_${user.Id}@example.com`,
         password: hashedPw,
         updatedAt: new Date(),
       },
-      { where: { email: userInfo.email } }
+      { where: { Id: user.Id } }
     );
 
     res.clearCookie("jwtToken", { path: "/" });

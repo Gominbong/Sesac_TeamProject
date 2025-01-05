@@ -51,7 +51,7 @@ exports.createWorryList = async (req, res) => {
   if (!id) {
     res.send({
       result: false,
-      message: "jwt토큰 유효시간 검증실패 로그인 다시 하세요",
+      message: "jwt토큰 유효시간 검증실패 로그인 다시 해주세요",
     });
     return;
   }
@@ -94,6 +94,16 @@ exports.createWorryList = async (req, res) => {
 };
 
 exports.answerWorryList = async (req, res) => {
+  const id = jwtVlidation(req, res);
+
+  console.log("id===", id);
+  if (!id) {
+    res.send({
+      result: false,
+      message: "jwt토큰 유효시간 검증실패 로그인 다시 해주세요",
+    });
+    return;
+  }
   try {
     //Id 는 WorryList 테이블의 Id
     const { Id, userId, responderContent } = req.body;
@@ -146,35 +156,17 @@ exports.answerWorryList = async (req, res) => {
   }
 };
 
-exports.myAnswerListContent = async (req, res) => {
-  try {
-    const { Id } = req.body;
-    const myAnswerListContent = await WorryList.findOne({
-      attributes: [
-        "Id",
-        "sender_Id",
-        "title",
-        "senderContent",
-        "senderSwearWord",
-        "senderPostDateTime",
-        "responder_Id",
-        "responderContent",
-        "responderSwearWord",
-        "responderPostDateTime",
-        "tempRateresponder",
-        "checkReviewScore",
-      ],
-      where: { Id },
-    });
-    res.send({ result: true, myAnswerListContent });
-  } catch (error) {
-    //console.log("post /myAnswerList/content error", error);
-    res.status(500).send({ message: "서버 에러" });
-  }
-};
-
 // 답변받은 유저가 리뷰점수를 줌.
 exports.updateTempRateresponder = async (req, res) => {
+  const id = jwtVlidation(req, res);
+  console.log("id===", id);
+  if (!id) {
+    res.send({
+      result: false,
+      message: "jwt 유효시간 검증실패 다시 로그인 해주세요",
+    });
+    return;
+  }
   try {
     //tempScore는 1,2,3,4,5 5개 단계로 점수를 줄수 있도록함
     //온도점수공식
@@ -232,66 +224,17 @@ exports.updateTempRateresponder = async (req, res) => {
   }
 };
 
-exports.myWorryListContent = async (req, res) => {
-  // 나의 고민에 답변이 달렸을경우 checkReviewScore가 N로 바뀜
-  // checkReviewScore 이 N면 리뷰점수를 줄수 있도록 해야함
-  // 리뷰점수를 줬으면 N 값에서 Y값으로 변경하고 Y값이면 리뷰점수를 줄수 없도록 해야함
-
-  try {
-    const { Id } = req.body;
-    const myWorryListContent = await WorryList.findOne({
-      attributes: [
-        "Id",
-        "sender_Id",
-        "title",
-        "senderContent",
-        "senderSwearWord",
-        "senderPostDateTime",
-        "responder_Id",
-        "responderContent",
-        "responderSwearWord",
-        "responderPostDateTime",
-        "tempRateresponder",
-        "checkReviewScore",
-      ],
-      where: { Id },
-    });
-    res.send({ result: true, myWorryListContent });
-  } catch (error) {
-    //console.log("post /myWorryList/content error", error);
-    res.status(500).send({ message: "서버 에러" });
-  }
-};
-
-exports.myWorryList = async (req, res) => {
-  try {
-    console.log("나의 고민 내용 안 입니다.");
-    const { userId } = req.body;
-    const myWorryList = await WorryList.findAll({
-      attributes: [
-        "Id",
-        "sender_Id",
-        "title",
-        "senderContent",
-        "senderSwearWord",
-        "senderPostDateTime",
-        "responder_Id",
-        "responderContent",
-        "responderSwearWord",
-        "responderPostDateTime",
-        "tempRateresponder",
-        "checkReviewScore",
-      ],
-      where: { sender_Id: userId },
-    });
-    res.send({ result: true, myWorryList });
-  } catch (error) {
-    //console.log("post /myWorryList error", error);
-    res.status(500).send({ message: "서버 에러" });
-  }
-};
-
 exports.myAnswerList = async (req, res) => {
+  const id = jwtVlidation(req, res);
+
+  console.log("id===", id);
+  if (!id) {
+    res.send({
+      result: false,
+      message: "jwt토큰 유효시간 검증실패 로그인 다시 해주세요",
+    });
+    return;
+  }
   try {
     const { userId } = req.body;
     const myAnswerList = await WorryList.findAll({
@@ -320,9 +263,17 @@ exports.myAnswerList = async (req, res) => {
   }
 };
 exports.findAllWorryList = async (req, res) => {
+  const id = jwtVlidation(req, res);
+
+  console.log("id===", id);
+  if (!id) {
+    res.send({
+      result: false,
+      message: "jwt토큰 유효시간 검증실패 로그인 다시 해주세요",
+    });
+    return;
+  }
   try {
-    const token =
-      req.headers.authorization && req.headers.authorization.split(" ")[1];
     const { userId } = req.body;
 
     //console.log("백엔드에서 userId===", userId);

@@ -8,20 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const Id = dataContainer.getAttribute("data-myWorryList");
   let currentRating = 0;
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const btn = document.getElementById("ratingButton"); // 버튼 요소 가져오기
-    const modal = document.getElementById("ratingModal"); // 모달 요소 가져오기
-
-    if (btn && modal) {
-      btn.onclick = function () {
-        modal.style.display = "block";
-      };
-    } else {
-      console.error(
-        'Element with id "yourButtonId" or "yourModalId" not found'
-      );
-    }
-  });
+  if (btn) {
+    btn.onclick = function () {
+      modal.style.display = "block";
+    };
+  }
 
   closeBtn.onclick = function () {
     modal.style.display = "none";
@@ -80,12 +71,17 @@ document.addEventListener("DOMContentLoaded", function () {
           data: data,
         });
         const { result, message } = res.data;
-        alert(message);
 
-        modal.style.display = "none";
-        currentRating = 0;
-        resetStars();
-        document.location.reload();
+        if (result) {
+          alert(message);
+          modal.style.display = "none";
+          currentRating = 0;
+          resetStars();
+          document.location.reload();
+        } else {
+          alert(message);
+          document.location.href = "/";
+        }
       } else {
         alert("별점을 선택해주세요.");
       }
