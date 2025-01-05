@@ -27,7 +27,7 @@ exports.jwtVlidation = (req, res) => {
   }
   try {
     const decoded = jwt.verify(jwtToken, SECRET_KEY);
-    console.log("jwt토큰이 유효합니다. +1시간 jwt토큰 재발급", decoded);
+    console.log("jwt토큰이 유효합니다. +2시간 jwt토큰 재발급", decoded);
     const token = jwt.sign({ id: decoded.id }, SECRET_KEY, {
       expiresIn: "2h",
     });
