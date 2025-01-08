@@ -29,7 +29,7 @@ router.get("/logout", UserController.logout);
 //고민봉 도메인 룰 테스트용 10명 회원가입 시키기
 router.post("/regist10", UserController.testUserCreate);
 
-//고민봉 도메인 룰 테스트용 고민 10명의 유저 각각 10개씩 총 100개 생성성
+//고민봉 도메인 룰 테스트용 고민 10명의 유저 각각 10개씩 총 100개 생성
 router.post("/addWorryList100", WorryListController.testCreateWorryList);
 
 //고민봉 리뷰 점수 업데이트

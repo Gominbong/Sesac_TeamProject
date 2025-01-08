@@ -317,7 +317,11 @@ exports.findAllWorryList = async (req, res) => {
       worryList_Id: randomWorryList[0].Id,
     });
 
-    res.send({ result: true, randomWorryList });
+    res.send({
+      result: true,
+      randomWorryList,
+      message: "고민받기성공",
+    });
   } catch (error) {
     //console.log("get /worryList error", error);
     res.status(500).send({ message: "서버 에러" });

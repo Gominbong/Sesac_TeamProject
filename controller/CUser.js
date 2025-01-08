@@ -373,7 +373,6 @@ exports.registUser = async (req, res) => {
     });
     res.send({
       result: true,
-      userId: newUser.userId,
       message: "회원가입 성공",
     });
   } catch (error) {
@@ -440,7 +439,7 @@ exports.findAccount = async (req, res) => {
       return res.send({ result: false, message: "정보가 일치하지 않습니다" });
     }
 
-    res.send({ result: true, message: "정보가 일치합니다" });
+    res.send({ result: true, message: "비밀번호 변경성공공" });
   } catch (error) {
     //console.log("post /find-account error", error);
     res.status(500).send({ message: "서버 에러" });
@@ -578,7 +577,7 @@ exports.deleteAccount = async (req, res) => {
     res.clearCookie("jwtToken", { path: "/" });
     res.send({
       success: true,
-      message: "계정이 성공적으로 비활성화되었습니다.",
+      message: "회원탈퇴 성공",
     });
   } catch (error) {
     console.error("deleteAccount error:", error.message);
