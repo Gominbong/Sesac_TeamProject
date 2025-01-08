@@ -329,7 +329,7 @@ async function duplCheck() {
   try {
     const res = await axios({
       method: "post",
-      url: "/check-email",
+      url: "/checkEmail",
       data: data,
     });
 
@@ -473,7 +473,7 @@ async function checkAnswer() {
   try {
     const res = await axios({
       method: "post",
-      url: "/find-account",
+      url: "/findAccount",
       data: data,
     });
 

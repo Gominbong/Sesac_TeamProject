@@ -10,10 +10,10 @@ router.get("/", UserController.main);
 // 새 고민 작성, 욕설필터
 
 router.post("/regist", UserController.registUser);
-router.post("/check-email", UserController.checkEmail);
+router.post("/checkEmail", UserController.checkEmail);
 router.post("/login", UserController.loginUser);
-router.patch("/change-pw", UserController.changePw);
-router.post("/find-account", UserController.findAccount);
+router.patch("/changePw", UserController.changePw);
+router.post("/findAccount", UserController.findAccount);
 router.post("/deleteAccount", UserController.deleteAccount);
 router.post("/makeNewPw", UserController.makeNewPw);
 
